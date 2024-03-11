@@ -1,12 +1,34 @@
+import { myPref } from "@/lib/Preferences"
+import Link from "next/link"
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Deriv Automated Trading
-        </p>
-
+    <div className='h-screen flex flex-col gap-2 justify-center items-center'>
+      <div className='shadow-lg border-b border-slate-600 w-full absolute top-0  bg-slate-900 text-center py-4'>
+        gdhdg
       </div>
-    </main>
+      <form
+        action='/bot'
+        className='flex flex-col gap-2 px-3 py-4 w-[90%] md:w-auto bg-white'
+      >
+        <div className='flex flex-col'>
+          <label htmlFor='token'>Token</label>
+          <input
+            className='px-3 py-2 border border-blue-800 text-blue-800'
+            type='text'
+            name='token'
+          />
+        </div>
+        <div className='flex justify-center'>
+          <button className='px-3 py-2 bg-red-500' type='submit'>
+            Submit
+          </button>
+        </div>
+      </form>
+
+      <Link className='' href={`${myPref.httpUrl}${myPref.appId}`}>
+        Continue with deriv
+      </Link>
+    </div>
   )
 }
