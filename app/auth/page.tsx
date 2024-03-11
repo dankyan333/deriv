@@ -19,12 +19,45 @@ const DerivAccounts = () => {
   const [accounts, setAccounts] = useState<AccountsT[]>(DerivAccounts)
 
   if (accounts.length === 0) {
-    return <div className=''> Loading...</div>
+    return (
+      <div className='mainContainer font-sans'>
+        <div className='loaderText'>Loading...</div>
+      </div>
+    )
+  }
+
+  function getAccountType(code: any) {
+    let type
+
+    let str = code
+    let trimmedStr = str.substring(0, 2)
+    if (trimmedStr === "CR") {
+      return (type = "Real")
+    }
+    if (trimmedStr === "VR") {
+      return (type = "Demo")
+    }
+    return (type = "Unknown")
+  }
+
+  function getAccountTypeClass(code: any) {
+    let cssClass
+
+    let str = code
+    let trimmedStr = str.substring(0, 2)
+    if (trimmedStr === "CR") {
+      return (cssClass = "successInfo")
+    }
+    if (trimmedStr === "VR") {
+      return (cssClass = "warningInfo")
+    }
   }
 
   return (
-    <>
-      <div>Choose Account</div>
+    <div className='mainContainer font-sans'>
+      <div className='topNavCard'>
+        <li>Choose Account</li>
+      </div>
 
       <div className='accountCardContainer'>
         {accounts.map((account: any) => {
@@ -32,8 +65,14 @@ const DerivAccounts = () => {
           return (
             <Link key={account.code} href={url}>
               <div className='accountCard'>
-                <div className='accountCardType'></div>
-                <div className='accountCardBalanceInfo'>
+                <div
+                  className={`accountCardType ${getAccountTypeClass(
+                    account.code
+                  )}`}
+                >
+                  {getAccountType(account.code)}
+                </div>
+                <div className='accountCardInfo'>
                   {account.code} {account.currency}
                 </div>
               </div>
@@ -41,7 +80,7 @@ const DerivAccounts = () => {
           )
         })}
       </div>
-    </>
+    </div>
   )
 }
 

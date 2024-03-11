@@ -3,32 +3,38 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className='h-screen flex flex-col gap-2 justify-center items-center'>
-      <div className='shadow-lg border-b border-slate-600 w-full absolute top-0  bg-slate-900 text-center py-4'>
-        gdhdg
-      </div>
-      <form
-        action='/bot'
-        className='flex flex-col gap-2 px-3 py-4 w-[90%] md:w-auto bg-white'
-      >
+    <div className='h-screen flex flex-col gap-2 justify-center items-center font-sans'>
+      <div className='topNavCard'>Deriv Automated Trading</div>
+      <form action='/bot'>
         <div className='flex flex-col'>
-          <label htmlFor='token'>Token</label>
+          <label className='formLabel' htmlFor='token'>
+            Token
+          </label>
+
           <input
-            className='px-3 py-2 border border-blue-800 text-blue-800'
+            className='formInput'
             type='text'
             name='token'
+            placeholder='Enter token'
+            required
           />
         </div>
-        <div className='flex justify-center'>
-          <button className='px-3 py-2 bg-red-500' type='submit'>
-            Submit
-          </button>
-        </div>
-      </form>
 
-      <Link className='' href={`${myPref.httpUrl}${myPref.appId}`}>
-        Continue with deriv
-      </Link>
+        <button className='primaryButton' type='submit'>
+          Login
+        </button>
+
+        <h3 className='text-center py-4'>OR</h3>
+
+        <Link
+          className='primaryButton'
+          href={`${myPref.httpUrl}${myPref.appId}`}
+        >
+          <button className='primaryButton' type='button'>
+            Continue with deriv
+          </button>
+        </Link>
+      </form>
     </div>
   )
 }
