@@ -242,9 +242,11 @@ input[type="number"] {
 }
 
 .liveOutcome {
+  margin: 20px;
   font-size: 30px;
   font-weight: 900;
   word-break: keep-all;
+  text-align: center;
 }
 
 @media only screen and (min-width: 826px) {
