@@ -14,9 +14,15 @@ const page = () => {
 
 const GetToken = () => {
   const { token } = useGetQueryParams()
-  const { connected, messages, account } = useWebsokets({ token })
+  const { connected, setConnected, messages, socket } = useWebsokets({
+    token,
+  })
 
-  const {} = useMessages({ messages })
+  const { account, stopped, setStopped } = useMessages({
+    messages,
+    socket,
+    setConnected,
+  })
 
   if (!connected) {
     return <>Loading...</>
@@ -28,6 +34,15 @@ const GetToken = () => {
       <div className='flex flex-col'>
         <li>Balance {account?.balance}</li>
       </div>
+
+      <button
+        className='px-3 py-2 bg-blue-800'
+        onClick={() => {
+          setStopped(prevData => !prevData)
+        }}
+      >
+        {stopped ? "start" : "stop"}
+      </button>
     </>
   )
 }
