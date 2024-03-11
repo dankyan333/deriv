@@ -48,7 +48,7 @@ const GetToken = () => {
       <div className='flexWrap'>
         <div className='tradeActivityContainer'>
           <div className='liveActivity'>
-            <div className='liveOutcome successInfo'>You ahve +639.01</div>
+            <div className='liveOutcome successInfo'>You have won +639.01</div>
           </div>
           <div className='tradeHistory'>
             <div className='tradeHistoryTitle'>All Trades</div>
