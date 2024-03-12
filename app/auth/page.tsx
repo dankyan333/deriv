@@ -58,7 +58,6 @@ const DerivAccounts = () => {
       <div className='topNavCard'>
         <li>Choose Account</li>
       </div>
-
       <div className='accountCardContainer'>
         {accounts.map((account: any) => {
           const url = `bot?token=${account.token}`

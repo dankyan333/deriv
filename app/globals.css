@@ -122,6 +122,8 @@ form {
 .accountCardContainer {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   row-gap: 20px;
   column-gap: 20px;
 }
@@ -247,6 +249,25 @@ input[type="number"] {
   font-weight: 900;
   word-break: keep-all;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 20px;
+  column-gap: 20px;
+}
+
+.tradeHistoryInfo3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 13px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  height: 25px;
 }
 
 @media only screen and (min-width: 826px) {
@@ -280,6 +301,100 @@ input[type="number"] {
     border-radius: 20px;
     height: 380px;
     width: 250px;
+    overflow-x: auto;
+  }
+
+  .tradeHistoryTitle {
+    height: 25px;
+    width: 80px;
+    border-radius: 20px;
+    border: 1px solid #cdcdcd;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    margin-left: 35%;
+    margin-top: 5px;
+  }
+
+  .tradeHistoryHeading {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+
+  .tradeHistoryInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    height: 25px;
+  }
+}
+
+@media only screen and (max-width: 826px) {
+  form {
+    background-color: #222;
+    width: 80%;
+    height: 400px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 20px;
+  }
+
+  .flexWrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    row-gap: 50px;
+    width: 100%;
+    padding: 20px;
+    margin: 0 auto;
+    top: 100px;
+  }
+
+  .tradeActivityContainer {
+    width: auto;
+    min-height: 300px;
+    border-radius: 20px;
+    background-color: #222;
+    color: #cdcdcd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 20px;
+  }
+
+  .liveActivity {
+    background-color: #000;
+    border-radius: 20px;
+    min-height: 200px;
+    max-height: 480px;
+    min-width: 250px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+  }
+
+  .tradeHistory {
+    border-radius: 20px;
+    height: 250px;
+    min-width: 300px;
+    overflow-x: auto;
   }
 
   .tradeHistoryTitle {
@@ -316,27 +431,59 @@ input[type="number"] {
   }
 }
 
-@media only screen and (max-width: 826px) {
-  .flexWrap {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: absolute;
-    row-gap: 50px;
-    width: 100%;
-    padding: 20px;
-    margin: 0 auto;
-    top: 100px;
-  }
+/**
+ * ==============================================
+ * Dot Windmill
+ * ==============================================
+ */
+.dot-windmill {
+  position: relative;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #cdcdcd;
+  color: #cdcdcd;
+  transform-origin: 5px 15px;
+  animation: dot-windmill 2s infinite linear;
+}
+.dot-windmill::before,
+.dot-windmill::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+}
+.dot-windmill::before {
+  left: -8.66254px;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #cdcdcd;
+  color: #cdcdcd;
+}
+.dot-windmill::after {
+  left: 8.66254px;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #cdcdcd;
+  color: #cdcdcd;
+}
 
-  .tradeActivityContainer {
-    width: auto;
-    min-height: 500px;
-    border-radius: 20px;
-    background-color: #222;
-    color: #cdcdcd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+@keyframes dot-windmill {
+  0% {
+    transform: rotateZ(0deg) translate3d(0, 0, 0);
   }
+  100% {
+    transform: rotateZ(720deg) translate3d(0, 0, 0);
+  }
+}
+
+.alertContainer {
+  position: absolute;
+  z-index: 100;
+  top: 100px;
+  right: 10%;
 }

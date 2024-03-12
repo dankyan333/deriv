@@ -2,19 +2,34 @@
 import { subscribe } from "diagnostics_channel"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
+interface Trade {
+  buy_price: number
+  status: string
+  profit: number
+  contract_id: string
+}
+
 export const useMessages = ({
   messages,
   socket,
   setConnected,
+  setLiveAction,
+  setLiveActionClassName,
+  setShowLiveActionLoader,
 }: {
   messages: any
   socket: WebSocket
   setConnected: Dispatch<SetStateAction<boolean>>
+  setLiveAction: Dispatch<SetStateAction<any>>
+  setLiveActionClassName: Dispatch<SetStateAction<any>>
+  setShowLiveActionLoader: Dispatch<SetStateAction<any>>
 }) => {
   const [account, setAccount] = useState<any>()
   const [asset, setAsset] = useState<number[]>([])
   const [stopped, setStopped] = useState(true)
   const [runningTrades, setRunningTrades] = useState(0)
+  const [stake, setStakeValue] = useState(0.35)
+  const [trades, setTrades] = useState<Trade[]>([])
 
   useEffect(
     function () {
@@ -25,7 +40,12 @@ export const useMessages = ({
       }
 
       function analysis() {
-        if (stopped) return
+        if (stopped) {
+          setLiveAction("Start bot")
+          setShowLiveActionLoader(false)
+          setLiveActionClassName("warningInfo")
+          return
+        }
         if (runningTrades > 0) return
 
         let count = 0
@@ -34,18 +54,23 @@ export const useMessages = ({
             count++
           }
         }
-        console.log("analysing")
+
+        setLiveAction("Waiting for trading signal")
+        setShowLiveActionLoader(true)
+        setLiveActionClassName("dangerInfo")
 
         if (count === asset.length) {
           //open trade
-          console.log("signal acquired")
+          setLiveAction("Trading signal acquired, placing trade")
+          setShowLiveActionLoader(true)
+          setLiveActionClassName("successInfo")
 
           sendMsg({
             buy: 1,
             subscribe: 1,
-            price: 1000,
+            price: stake,
             parameters: {
-              amount: 1000,
+              amount: stake,
               basis: "stake",
               contract_type: "DIGITOVER",
               barrier: 3,
@@ -110,7 +135,28 @@ export const useMessages = ({
         case "proposal_open_contract":
           const proposal = messages?.proposal_open_contract
           if (proposal?.is_sold) {
+            console.log(messages.proposal_open_contract)
+            const data = messages.proposal_open_contract
+            const { status, profit, buy_price, contract_id } = data
+            const newTrade: Trade = { buy_price, status, profit, contract_id }
+            setTrades(prevTrades => [newTrade, ...prevTrades])
             setRunningTrades(0)
+            setShowLiveActionLoader(false)
+
+            if (status === "won") {
+              setLiveAction((prevData: any) => {
+                prevData = `You have ${status} +${profit} USD`
+                return prevData
+              })
+              setLiveActionClassName("successInfo")
+            }
+            if (status === "lost") {
+              setLiveAction((prevData: any) => {
+                prevData = `You have ${status} ${profit} USD`
+                return prevData
+              })
+              setLiveActionClassName("dangerInfo")
+            }
           }
           break
         case "ping":
@@ -124,5 +170,5 @@ export const useMessages = ({
     [messages]
   )
 
-  return { account, stopped, setStopped }
+  return { account, stopped, setStopped, stake, setStakeValue, trades }
 }

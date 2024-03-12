@@ -1,6 +1,7 @@
 "use client"
 import { myPref } from "@/lib/Preferences"
 import { useEffect, useState } from "react"
+
 // ZeYLjTYs5piyvUa
 export const useWebsokets = ({ token }: { token: string }) => {
   const [messages, setMessages] = useState()
@@ -44,7 +45,7 @@ export const useWebsokets = ({ token }: { token: string }) => {
             `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
           )
         } else {
-          console.log("[close] Connection died")
+          console.log(`[close] Connection died`)
         }
       }
 
@@ -57,5 +58,10 @@ export const useWebsokets = ({ token }: { token: string }) => {
     [token]
   )
 
-  return { connected, setConnected, messages, socket }
+  return {
+    connected,
+    setConnected,
+    messages,
+    socket,
+  }
 }
