@@ -29,6 +29,12 @@ export const useMessages = ({
   const [runningTrades, setRunningTrades] = useState(0)
   const [stake, setStakeValue] = useState(0.35)
   const [trades, setTrades] = useState<Trade[]>([])
+  const [takeProfit, setTakeProfit] = useState<number>(0)
+  const [stopLoss, setStopLoss] = useState<number>(0)
+  const [totalProfit, setTotalProfit] = useState<number>(0)
+  const [totalstopsProfit, setTotalStopsProfit] = useState<number>(0)
+  const [invalidInputValue, setInvalidINputValue] = useState(false)
+  const [profitClass, setProfitClass] = useState<any>()
 
   useEffect(
     function () {
@@ -36,6 +42,41 @@ export const useMessages = ({
         if (socket && socket.readyState === WebSocket.OPEN) {
           socket.send(JSON.stringify(msg))
         }
+      }
+
+      function calculateStops() {
+        if (stopped) return
+        if (takeProfit < 1 || stake < 1) return
+        let newtotalProfit = trades.reduce(
+          (acc, trade) => acc + trade.profit,
+          0
+        )
+        if (newtotalProfit >= takeProfit || newtotalProfit <= -stopLoss) {
+          setStopped(true)
+          setTotalStopsProfit(0)
+        } else {
+          setStopped(false)
+          setTotalStopsProfit(newtotalProfit)
+        }
+      }
+
+      function calculateTotalProfit() {
+        if (stopped) return
+        let calctotalProfit = trades.reduce(
+          (acc, trade) => acc + trade.profit,
+          0
+        )
+        let roundedVal = parseFloat(calctotalProfit.toFixed(2))
+        if (roundedVal < 0) {
+          setProfitClass("dangerInfo")
+        } else if (Number.isInteger(roundedVal)) {
+          setProfitClass("successInfo")
+          setTotalProfit(parseInt(`+${roundedVal}`))
+        } else {
+          setProfitClass("successInfo")
+          setTotalProfit(parseFloat(`+${roundedVal}`))
+        }
+        setTotalProfit(roundedVal)
       }
 
       function analysis() {
@@ -141,7 +182,7 @@ export const useMessages = ({
             if (updatedAsset.length > 2) {
               updatedAsset.pop()
             }
-            console.log(updatedAsset)
+            // console.log(updatedAsset)
             return updatedAsset
           })
 
@@ -181,9 +222,28 @@ export const useMessages = ({
           break
       }
       analysis()
+      calculateStops()
+      calculateTotalProfit()
     },
     [messages]
   )
 
-  return { account, stopped, setStopped, stake, setStakeValue, trades }
+  return {
+    account,
+    stopped,
+    setStopped,
+    stake,
+    setStakeValue,
+    trades,
+    takeProfit,
+    stopLoss,
+    setTakeProfit,
+    setStopLoss,
+    invalidInputValue,
+    setInvalidINputValue,
+    totalProfit,
+    setTotalProfit,
+    profitClass,
+    setProfitClass,
+  }
 }

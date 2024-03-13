@@ -29,34 +29,78 @@ const GetToken = () => {
     setShowLiveActionLoader,
   } = useLiveActionMessage()
 
-  const { account, stopped, setStopped, stake, setStakeValue, trades } =
-    useMessages({
-      messages,
-      socket,
-      setConnected,
-      setLiveAction,
-      setLiveActionClassName,
-      setShowLiveActionLoader,
-    })
+  const {
+    account,
+    stopped,
+    setStopped,
+    stake,
+    setStakeValue,
+    trades,
+    takeProfit,
+    stopLoss,
+    setStopLoss,
+    setTakeProfit,
+    invalidInputValue,
+    setInvalidINputValue,
+    totalProfit,
+    profitClass,
+  } = useMessages({
+    messages,
+    socket,
+    setConnected,
+    setLiveAction,
+    setLiveActionClassName,
+    setShowLiveActionLoader,
+  })
 
   const handleStakeInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    let stakeValue = event.target.valueAsNumber
+    let stakeValue = parseFloat(event.target.value.trim())
     if (!stakeValue) {
       setLiveAction("Stake is empty!")
       setLiveActionClassName("dangerInfo")
-      return
+      setInvalidINputValue(true)
+      return setStakeValue(parseFloat("0.35"))
     }
     if (stakeValue < 0.34) {
       setLiveAction("Minimum stake is 0.35 USD")
       setLiveActionClassName("dangerInfo")
-      return
+      setInvalidINputValue(true)
+      return setStakeValue(parseFloat("0.35"))
     }
     if (stakeValue > 1000) {
       setLiveAction("Maximum stake is 1000 USD")
       setLiveActionClassName("dangerInfo")
-      return
+      setInvalidINputValue(true)
+      return setStakeValue(parseFloat("0.35"))
     }
+    setInvalidINputValue(false)
     setStakeValue(stakeValue)
+  }
+
+  const handleTakeProfitInputChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    let value = event.target.value.trim()
+    if (!/^\d+(\.\d+)?$/.test(value)) {
+      setLiveAction("Invalid number")
+      setLiveActionClassName("dangerInfo")
+      setInvalidINputValue(true)
+      return setStopLoss(parseFloat("0"))
+    }
+    setTakeProfit(parseFloat(value))
+    setInvalidINputValue(false)
+  }
+
+  const handleStopLossInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    let value = event.target.value.trim()
+    if (!/^\d+(\.\d+)?$/.test(value)) {
+      setLiveAction("Invalid number")
+      setLiveActionClassName("dangerInfo")
+      setInvalidINputValue(true)
+      return setStopLoss(parseFloat("0"))
+    }
+    setStopLoss(parseFloat(value))
+    setInvalidINputValue(false)
   }
 
   if (!connected) {
@@ -115,35 +159,78 @@ const GetToken = () => {
           </div>
         </div>
 
-        <form className='stakeForm'>
-          <label className='stakeLabel' htmlFor='stake'>
-            Stake
-          </label>
-          <input
-            readOnly={!stopped}
-            value={stake}
-            onChange={handleStakeInputChange}
-            className='stakeInput'
-            type='number'
-            name='stake'
-            id='stake'
-          />
-          <button
-            type='button'
-            className={stopped ? "successButton" : "warningButton"}
-            onClick={() => {
-              if (account?.balance < stake) {
-                setLiveAction("Insufficient balance")
-                setLiveActionClassName("dangerInfo")
-                setStopped(true)
-                return
-              }
-              setStopped(prevData => !prevData)
-            }}
-          >
-            {stopped ? "Start" : "Stop"}
-          </button>
-        </form>
+        <div className='displayColumn'>
+          <div className='totalProfitContainer displayColumn'>
+            <div className='totalProfitLabel'>Total Profit</div>
+            <div className={`totalProfitText ${profitClass}`}>
+              {totalProfit}
+            </div>
+          </div>
+
+          <form className='stakeForm'>
+            <label className='stakeLabel' htmlFor='stake'>
+              Stake
+            </label>
+            <input
+              readOnly={!stopped}
+              value={stake}
+              onChange={handleStakeInputChange}
+              className='stakeInput'
+              type='text'
+              name='stake'
+              id='stake'
+            />
+
+            <div className='displayRow'>
+              <div className='displayColumn'>
+                <label className='takeProfitLabel' htmlFor='takeProfit'>
+                  Take Profit
+                </label>
+                <input
+                  readOnly={!stopped}
+                  value={takeProfit}
+                  onChange={handleTakeProfitInputChange}
+                  className='takeProfitInput'
+                  type='text'
+                  name='takeProfit'
+                  id='takeProfit'
+                />
+              </div>
+
+              <div className='displayColumn'>
+                <label className='stopLossLabel' htmlFor='stopLoss'>
+                  Stop Loss
+                </label>
+                <input
+                  readOnly={!stopped}
+                  value={stopLoss}
+                  onChange={handleStopLossInputChange}
+                  className='stopLossInput'
+                  type='text'
+                  name='stopLoss'
+                  id='stopLoss'
+                />
+              </div>
+            </div>
+
+            <button
+              disabled={invalidInputValue}
+              type='button'
+              className={stopped ? "successButton" : "warningButton"}
+              onClick={() => {
+                if (account?.balance < stake) {
+                  setLiveAction("Insufficient balance")
+                  setLiveActionClassName("dangerInfo")
+                  setStopped(true)
+                  return
+                }
+                setStopped(prevData => !prevData)
+              }}
+            >
+              {stopped ? "Start" : "Stop"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )
