@@ -353,6 +353,11 @@ input[type="number"] {
   font-size: 24px;
 }
 
+.tradeHistoryInfo1,
+.tradeHistoryInfo2 {
+  color: #fff;
+}
+
 @media only screen and (min-width: 826px) {
   .flexWrap {
     display: flex;

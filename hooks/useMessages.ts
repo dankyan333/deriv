@@ -179,7 +179,7 @@ export const useMessages = ({
             }
 
             updatedAsset.unshift(parseInt(lastOneDigit))
-            if (updatedAsset.length > 2) {
+            if (updatedAsset.length > 3) {
               updatedAsset.pop()
             }
             // console.log(updatedAsset)
