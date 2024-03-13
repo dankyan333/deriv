@@ -15,6 +15,8 @@ export const useMessages = ({
   setLiveAction,
   setLiveActionClassName,
   setShowLiveActionLoader,
+  setToastMessage,
+  setToastType,
 }: {
   messages: any
   socket: WebSocket
@@ -22,6 +24,8 @@ export const useMessages = ({
   setLiveAction: Dispatch<SetStateAction<any>>
   setLiveActionClassName: Dispatch<SetStateAction<any>>
   setShowLiveActionLoader: Dispatch<SetStateAction<any>>
+  setToastMessage: Dispatch<SetStateAction<any>>
+  setToastType: Dispatch<SetStateAction<any>>
 }) => {
   const [account, setAccount] = useState<any>()
   const [asset, setAsset] = useState<number[]>([])
@@ -29,6 +33,7 @@ export const useMessages = ({
   const [runningTrades, setRunningTrades] = useState(0)
   const [stake, setStakeValue] = useState(0.35)
   const [trades, setTrades] = useState<Trade[]>([])
+  const [faketrades, setFakeTrades] = useState<Trade[]>([])
   const [takeProfit, setTakeProfit] = useState<number>(0)
   const [stopLoss, setStopLoss] = useState<number>(0)
   const [totalProfit, setTotalProfit] = useState<number>(0)
@@ -44,24 +49,45 @@ export const useMessages = ({
         }
       }
 
-      function calculateStops() {
+      function trimToTwoDecimals(number: any) {
+        let roundedNum = parseFloat(number.toFixed(2))
+        return roundedNum
+      }
+
+      function calculateProfit(stopLoss = 0, takeProfit = 0) {
         if (stopped) return
-        if (takeProfit < 1 || stake < 1) return
-        let newtotalProfit = trades.reduce(
-          (acc, trade) => acc + trade.profit,
-          0
+        if (stopLoss === 0 && takeProfit === 0) {
+          return
+        }
+
+        setTotalStopsProfit(
+          faketrades.reduce((acc, trade) => acc + trade.profit, 0)
         )
-        if (newtotalProfit >= takeProfit || newtotalProfit <= -stopLoss) {
+
+        if (stopLoss !== 0 && totalstopsProfit <= -stopLoss) {
           setStopped(true)
           setTotalStopsProfit(0)
-        } else {
-          setStopped(false)
-          setTotalStopsProfit(newtotalProfit)
+          setFakeTrades([])
+          setToastMessage(
+            `Stop Loss ${trimToTwoDecimals(totalstopsProfit)} USD`
+          )
+          setToastType("error")
+          return
+        }
+
+        if (takeProfit !== 0 && totalstopsProfit >= takeProfit) {
+          setStopped(true)
+          setTotalStopsProfit(0)
+          setFakeTrades([])
+          setToastMessage(
+            `Take Profit +${trimToTwoDecimals(totalstopsProfit)} USD`
+          )
+          setToastType("success")
+          return
         }
       }
 
       function calculateTotalProfit() {
-        if (stopped) return
         let calctotalProfit = trades.reduce(
           (acc, trade) => acc + trade.profit,
           0
@@ -87,7 +113,6 @@ export const useMessages = ({
           return
         }
         if (runningTrades > 0) return
-
         setLiveAction("Waiting for trading signal")
         setShowLiveActionLoader(true)
         setLiveActionClassName("dangerInfo")
@@ -179,7 +204,7 @@ export const useMessages = ({
             }
 
             updatedAsset.unshift(parseInt(lastOneDigit))
-            if (updatedAsset.length > 3) {
+            if (updatedAsset.length > 2) {
               updatedAsset.pop()
             }
             // console.log(updatedAsset)
@@ -196,6 +221,7 @@ export const useMessages = ({
             const { status, profit, buy_price, contract_id } = data
             const newTrade: Trade = { buy_price, status, profit, contract_id }
             setTrades(prevTrades => [newTrade, ...prevTrades])
+            setFakeTrades(prevTrades => [newTrade, ...prevTrades])
             setRunningTrades(0)
             setShowLiveActionLoader(false)
 
@@ -222,7 +248,8 @@ export const useMessages = ({
           break
       }
       analysis()
-      calculateStops()
+      // calculateStops()
+      calculateProfit(stopLoss, takeProfit)
       calculateTotalProfit()
     },
     [messages]

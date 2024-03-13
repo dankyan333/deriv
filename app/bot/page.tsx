@@ -1,8 +1,11 @@
 "use client"
 
+import Settings from "@/components/Settings"
+import Toast from "@/components/Toast"
 import { useGetQueryParams } from "@/hooks/useGetQueryParams"
 import { useLiveActionMessage } from "@/hooks/useLiveActionMessage"
 import { useMessages } from "@/hooks/useMessages"
+import { useToast } from "@/hooks/useToasts"
 import { useWebsokets } from "@/hooks/useWebsokets"
 import { ChangeEvent, Suspense } from "react"
 
@@ -16,8 +19,13 @@ const page = () => {
 
 const GetToken = () => {
   const { token } = useGetQueryParams()
+
+  const { toastMessage, toastType, setToastMessage, setToastType } = useToast()
+
   const { connected, setConnected, messages, socket } = useWebsokets({
     token,
+    setToastMessage,
+    setToastType,
   })
 
   const {
@@ -51,6 +59,8 @@ const GetToken = () => {
     setLiveAction,
     setLiveActionClassName,
     setShowLiveActionLoader,
+    setToastMessage,
+    setToastType,
   })
 
   const handleStakeInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -103,6 +113,23 @@ const GetToken = () => {
     setInvalidINputValue(false)
   }
 
+  const handleBot = () => {
+    if (account?.balance < stake) {
+      setToastMessage("Insufficient balance")
+      setToastType("error")
+      setStopped(true)
+      return
+    }
+    if (!stopped) {
+      setToastMessage("Bot stopped")
+      setToastType("success")
+    } else {
+      setToastMessage("Bot started")
+      setToastType("success")
+    }
+    setStopped(prevData => !prevData)
+  }
+
   if (!connected) {
     return (
       <div className='mainContainer font-sans'>
@@ -118,6 +145,11 @@ const GetToken = () => {
           {account?.balance} {account?.currency}
         </li>
       </div>
+
+      <Toast
+        message={String(toastMessage)}
+        type={toastType as "success" | "error" | "info"}
+      />
 
       <div className='flexWrap'>
         <div className='tradeActivityContainer'>
@@ -217,15 +249,7 @@ const GetToken = () => {
               disabled={invalidInputValue}
               type='button'
               className={stopped ? "successButton" : "warningButton"}
-              onClick={() => {
-                if (account?.balance < stake) {
-                  setLiveAction("Insufficient balance")
-                  setLiveActionClassName("dangerInfo")
-                  setStopped(true)
-                  return
-                }
-                setStopped(prevData => !prevData)
-              }}
+              onClick={handleBot}
             >
               {stopped ? "Start" : "Stop"}
             </button>
