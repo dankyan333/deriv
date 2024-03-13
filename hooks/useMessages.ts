@@ -1,5 +1,4 @@
 "use client"
-import { subscribe } from "diagnostics_channel"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
 interface Trade {
@@ -48,16 +47,16 @@ export const useMessages = ({
         }
         if (runningTrades > 0) return
 
+        setLiveAction("Waiting for trading signal")
+        setShowLiveActionLoader(true)
+        setLiveActionClassName("dangerInfo")
+
         let count = 0
         for (let digit of asset) {
           if (digit <= 3) {
             count++
           }
         }
-
-        setLiveAction("Waiting for trading signal")
-        setShowLiveActionLoader(true)
-        setLiveActionClassName("dangerInfo")
 
         if (count === asset.length) {
           //open trade
@@ -119,23 +118,38 @@ export const useMessages = ({
         case "history":
           break
         case "tick":
+          let lastOneDigit: any
+
           setAsset(prev => {
-            const newAsset = [...prev]
+            const updatedAsset = [...prev]
             let newTick = String(messages?.tick.quote)
-            newAsset.unshift(parseInt(newTick[newTick.length - 1]))
-            if (newAsset.length > 3) {
-              newAsset.pop()
+
+            function isPriceLengthDifferent(price: any) {
+              const targetLength = "1567.81".length
+              return price.toString().length !== targetLength
             }
-            return newAsset
+            if (isPriceLengthDifferent(newTick)) {
+              lastOneDigit = [0]
+            } else {
+              lastOneDigit = newTick
+                .slice(-1)
+                .split("")
+                .map(digit => parseInt(digit))
+            }
+
+            updatedAsset.unshift(parseInt(lastOneDigit))
+            if (updatedAsset.length > 3) {
+              updatedAsset.pop()
+            }
+            return updatedAsset
           })
+
           break
         case "buy":
-          console.log(messages?.buy)
           break
         case "proposal_open_contract":
           const proposal = messages?.proposal_open_contract
           if (proposal?.is_sold) {
-            console.log(messages.proposal_open_contract)
             const data = messages.proposal_open_contract
             const { status, profit, buy_price, contract_id } = data
             const newTrade: Trade = { buy_price, status, profit, contract_id }
