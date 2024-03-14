@@ -1,5 +1,6 @@
 "use client"
 
+import NavSubMenu from "@/components/NavSubMenu"
 import Settings from "@/components/Settings"
 import Toast from "@/components/Toast"
 import { useGetQueryParams } from "@/hooks/useGetQueryParams"
@@ -52,6 +53,9 @@ const GetToken = () => {
     setInvalidINputValue,
     totalProfit,
     profitClass,
+    martingale,
+    setMartingale,
+    setStakes,
   } = useMessages({
     messages,
     socket,
@@ -64,14 +68,14 @@ const GetToken = () => {
   })
 
   const handleStakeInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    let stakeValue = parseFloat(event.target.value.trim())
+    let stakeValue = parseInt(event.target.value.trim())
     if (!stakeValue) {
       setLiveAction("Stake is empty!")
       setLiveActionClassName("dangerInfo")
       setInvalidINputValue(true)
       return setStakeValue(parseFloat("0.35"))
     }
-    if (stakeValue < 0.34) {
+    if (stakeValue <= 0.34) {
       setLiveAction("Minimum stake is 0.35 USD")
       setLiveActionClassName("dangerInfo")
       setInvalidINputValue(true)
@@ -85,6 +89,7 @@ const GetToken = () => {
     }
     setInvalidINputValue(false)
     setStakeValue(stakeValue)
+    setStakes([])
   }
 
   const handleTakeProfitInputChange = (
@@ -122,10 +127,12 @@ const GetToken = () => {
     }
     if (!stopped) {
       setToastMessage("Bot stopped")
-      setToastType("success")
+      setToastType("info")
+      setStakes([])
     } else {
       setToastMessage("Bot started")
       setToastType("success")
+      setStakes([])
     }
     setStopped(prevData => !prevData)
   }
@@ -144,6 +151,7 @@ const GetToken = () => {
         <li className='balInfo'>
           {account?.balance} {account?.currency}
         </li>
+        {/* <NavSubMenu data={account}></NavSubMenu> */}
       </div>
 
       <Toast
@@ -205,7 +213,6 @@ const GetToken = () => {
             </label>
             <input
               readOnly={!stopped}
-              value={stake}
               onChange={handleStakeInputChange}
               className='stakeInput'
               type='text'
@@ -255,6 +262,14 @@ const GetToken = () => {
             </button>
           </form>
         </div>
+
+        <Settings
+          data={account}
+          setMartingaleState={setMartingale}
+          setToastMessage={setToastMessage}
+          setToastType={setToastType}
+          martingale={martingale}
+        ></Settings>
       </div>
     </div>
   )

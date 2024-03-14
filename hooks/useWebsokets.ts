@@ -49,9 +49,7 @@ export const useWebsokets = ({
 
       ws.onclose = function (event) {
         if (event.wasClean) {
-          setToastMessage(
-            `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
-          )
+          setToastMessage(`[close] Connection closed cleanly`)
           setToastType("success")
         } else {
           setToastMessage(`[close] Connection died`)

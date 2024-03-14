@@ -4,7 +4,7 @@ import Link from "next/link"
 export default function Home() {
   return (
     <div className='h-screen flex flex-col gap-2 justify-center items-center font-sans'>
-      <div className='topNavCard'>Deriv Automated Trading</div>
+      <div className='topNavCard'>Deriv</div>
       <form action='/bot'>
         <div className='flex flex-col'>
           <label className='formLabel' htmlFor='token'>

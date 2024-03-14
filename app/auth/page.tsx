@@ -14,6 +14,33 @@ const Page = () => {
   )
 }
 
+export function getAccountType(code: any) {
+  let type
+
+  let str = code
+  let trimmedStr = str.substring(0, 2)
+  if (trimmedStr === "CR") {
+    return (type = "Real")
+  }
+  if (trimmedStr === "VR") {
+    return (type = "Demo")
+  }
+  return (type = "Unknown")
+}
+
+export function getAccountTypeClass(code: any) {
+  let cssClass
+
+  let str = code
+  let trimmedStr = str.substring(0, 2)
+  if (trimmedStr === "CR") {
+    return (cssClass = "successInfo")
+  }
+  if (trimmedStr === "VR") {
+    return (cssClass = "warningInfo")
+  }
+}
+
 const DerivAccounts = () => {
   const DerivAccounts = useDerivAccount()
   const [accounts, setAccounts] = useState<AccountsT[]>(DerivAccounts)
@@ -24,33 +51,6 @@ const DerivAccounts = () => {
         <div className='loaderText'>Loading...</div>
       </div>
     )
-  }
-
-  function getAccountType(code: any) {
-    let type
-
-    let str = code
-    let trimmedStr = str.substring(0, 2)
-    if (trimmedStr === "CR") {
-      return (type = "Real")
-    }
-    if (trimmedStr === "VR") {
-      return (type = "Demo")
-    }
-    return (type = "Unknown")
-  }
-
-  function getAccountTypeClass(code: any) {
-    let cssClass
-
-    let str = code
-    let trimmedStr = str.substring(0, 2)
-    if (trimmedStr === "CR") {
-      return (cssClass = "successInfo")
-    }
-    if (trimmedStr === "VR") {
-      return (cssClass = "warningInfo")
-    }
   }
 
   return (

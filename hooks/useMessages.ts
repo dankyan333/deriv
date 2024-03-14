@@ -32,6 +32,8 @@ export const useMessages = ({
   const [stopped, setStopped] = useState(true)
   const [runningTrades, setRunningTrades] = useState(0)
   const [stake, setStakeValue] = useState(0.35)
+  const [stakes, setStakes] = useState<number[]>([])
+  const [defaultStake, setDefaultStake] = useState(0.35)
   const [trades, setTrades] = useState<Trade[]>([])
   const [faketrades, setFakeTrades] = useState<Trade[]>([])
   const [takeProfit, setTakeProfit] = useState<number>(0)
@@ -40,6 +42,7 @@ export const useMessages = ({
   const [totalstopsProfit, setTotalStopsProfit] = useState<number>(0)
   const [invalidInputValue, setInvalidINputValue] = useState(false)
   const [profitClass, setProfitClass] = useState<any>()
+  const [martingale, setMartingale] = useState<boolean>(false)
 
   useEffect(
     function () {
@@ -59,11 +62,9 @@ export const useMessages = ({
         if (stopLoss === 0 && takeProfit === 0) {
           return
         }
-
         setTotalStopsProfit(
           faketrades.reduce((acc, trade) => acc + trade.profit, 0)
         )
-
         if (stopLoss !== 0 && totalstopsProfit <= -stopLoss) {
           setStopped(true)
           setTotalStopsProfit(0)
@@ -118,6 +119,7 @@ export const useMessages = ({
         setLiveActionClassName("dangerInfo")
 
         let count = 0
+
         for (let digit of asset) {
           if (digit <= 3) {
             count++
@@ -130,36 +132,63 @@ export const useMessages = ({
           setShowLiveActionLoader(true)
           setLiveActionClassName("successInfo")
 
-          sendMsg({
-            buy: 1,
-            subscribe: 1,
-            price: stake,
-            parameters: {
-              amount: stake,
-              basis: "stake",
-              contract_type: "DIGITOVER",
-              barrier: 3,
-              currency: "USD",
-              duration: 1,
-              duration_unit: "t",
-              symbol: "1HZ100V",
-            },
-          })
+          if (stake > 0.34 || account.balance > stake) {
+            sendMsg({
+              buy: 1,
+              subscribe: 1,
+              price: stake,
+              parameters: {
+                amount: stake,
+                basis: "stake",
+                contract_type: "DIGITOVER",
+                barrier: 3,
+                currency: "USD",
+                duration: 1,
+                duration_unit: "t",
+                symbol: "1HZ100V",
+              },
+            })
+            setRunningTrades(prevData => {
+              return prevData + 1
+            })
 
-          setRunningTrades(prevData => {
-            return prevData + 1
-          })
+            setStakes(prev => {
+              let updatedAsset = [...prev]
+              updatedAsset.unshift(parseInt(`${stake}`))
+              const firststake = updatedAsset[updatedAsset.length - 1]
+              setDefaultStake(firststake)
+              if (stopped) {
+                setStakes([])
+              }
+              return updatedAsset
+            })
+          } else {
+            setToastMessage("Timeout occured")
+            setToastType("error")
+            setStopped(true)
+          }
         }
       }
+
+      function startMartingale() {
+        if (!martingale) return
+        const newStake = stake * 2
+        setStakeValue(newStake)
+      }
+
+      function handleWin() {
+        if (!martingale) return
+        setStakeValue(defaultStake)
+      }
+
       switch (messages?.msg_type) {
         case "authorize":
           const authData = messages?.authorize
           setAccount((prevData: any) => {
-            const { balance, currency, loginid, is_virtual } =
+            const { balance, currency, loginid, is_virtual, account_list } =
               messages?.authorize
 
-            prevData = { balance, currency, loginid, is_virtual }
-
+            prevData = { balance, currency, loginid, is_virtual, account_list }
             return prevData
           })
           // get ticks
@@ -207,7 +236,6 @@ export const useMessages = ({
             if (updatedAsset.length > 2) {
               updatedAsset.pop()
             }
-            // console.log(updatedAsset)
             return updatedAsset
           })
 
@@ -226,6 +254,7 @@ export const useMessages = ({
             setShowLiveActionLoader(false)
 
             if (status === "won") {
+              handleWin()
               setLiveAction((prevData: any) => {
                 prevData = `You have ${status} +${profit} USD`
                 return prevData
@@ -233,6 +262,7 @@ export const useMessages = ({
               setLiveActionClassName("successInfo")
             }
             if (status === "lost") {
+              startMartingale()
               setLiveAction((prevData: any) => {
                 prevData = `You have ${status} ${profit} USD`
                 return prevData
@@ -272,5 +302,11 @@ export const useMessages = ({
     setTotalProfit,
     profitClass,
     setProfitClass,
+    martingale,
+    setMartingale,
+    defaultStake,
+    setDefaultStake,
+    setStakes,
+    stakes,
   }
 }
