@@ -14,7 +14,7 @@ const Page = () => {
   )
 }
 
-export function getAccountType(code: any) {
+function getAccountType(code: any) {
   let type
 
   let str = code
@@ -28,7 +28,7 @@ export function getAccountType(code: any) {
   return (type = "Unknown")
 }
 
-export function getAccountTypeClass(code: any) {
+function getAccountTypeClass(code: any) {
   let cssClass
 
   let str = code
