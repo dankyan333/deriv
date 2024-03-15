@@ -153,7 +153,7 @@ const GetToken = () => {
         <li className='balInfo'>
           {account?.balance} {account?.currency}
         </li>
-        <NavSubMenu data={account}></NavSubMenu>
+        {/* <NavSubMenu data={account}></NavSubMenu> */}
       </div>
 
       <Toast
