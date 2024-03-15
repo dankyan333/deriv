@@ -1,6 +1,5 @@
 "use client"
 
-import NavSubMenu from "@/components/NavSubMenu"
 import Settings from "@/components/Settings"
 import Toast from "@/components/Toast"
 import { useGetQueryParams } from "@/hooks/useGetQueryParams"
@@ -153,7 +152,6 @@ const GetToken = () => {
         <li className='balInfo'>
           {account?.balance} {account?.currency}
         </li>
-        <NavSubMenu data={account}></NavSubMenu>
       </div>
 
       <Toast

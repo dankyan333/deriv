@@ -217,18 +217,14 @@ export const useMessages = ({
 
           setAccount((prevData: any) => {
             var updatedBalance = prevData.balance
-
             if (prevData.balance !== 10000) {
               updatedBalance = topup >= 10000 ? topup : -topup
             }
-
             return {
               ...prevData,
               balance: updatedBalance,
             }
           })
-
-          console.log(topup)
           break
         case "tick":
           let lastOneDigit: any
@@ -250,7 +246,6 @@ export const useMessages = ({
                 .split("")
                 .map(digit => parseInt(digit))
             }
-
             updatedAsset.unshift(parseInt(lastOneDigit))
             if (updatedAsset.length > 2) {
               updatedAsset.pop()
