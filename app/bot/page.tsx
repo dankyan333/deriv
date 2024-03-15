@@ -68,20 +68,22 @@ const GetToken = () => {
   })
 
   const handleStakeInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    let stakeValue = parseInt(event.target.value.trim())
+    let stakeValue = parseFloat(event.target.value.trim())
     if (!stakeValue) {
       setLiveAction("Stake is empty!")
       setLiveActionClassName("dangerInfo")
       setInvalidINputValue(true)
       return setStakeValue(parseFloat("0.35"))
     }
-    if (stakeValue <= 0.34) {
+
+    if (stakeValue < 0.34) {
       setLiveAction("Minimum stake is 0.35 USD")
       setLiveActionClassName("dangerInfo")
       setInvalidINputValue(true)
       return setStakeValue(parseFloat("0.35"))
     }
-    if (stakeValue > 1000) {
+
+    if (stakeValue > 10000) {
       setLiveAction("Maximum stake is 1000 USD")
       setLiveActionClassName("dangerInfo")
       setInvalidINputValue(true)
@@ -151,7 +153,7 @@ const GetToken = () => {
         <li className='balInfo'>
           {account?.balance} {account?.currency}
         </li>
-        {/* <NavSubMenu data={account}></NavSubMenu> */}
+        <NavSubMenu data={account}></NavSubMenu>
       </div>
 
       <Toast
@@ -269,6 +271,8 @@ const GetToken = () => {
           setToastMessage={setToastMessage}
           setToastType={setToastType}
           martingale={martingale}
+          socket={socket}
+          loginid={account.loginid}
         ></Settings>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import { AccountsT, useDerivAccount } from "@/hooks/useDerivAccount"
 import Link from "next/link"
-import React, { Suspense, useState } from "react"
+import React, { Suspense, useEffect, useState } from "react"
 
 const Page = () => {
   return (
@@ -44,6 +44,10 @@ function getAccountTypeClass(code: any) {
 const DerivAccounts = () => {
   const DerivAccounts = useDerivAccount()
   const [accounts, setAccounts] = useState<AccountsT[]>(DerivAccounts)
+
+  useEffect(() => {
+    sessionStorage.setItem("accounts", JSON.stringify(accounts))
+  }, [accounts])
 
   if (accounts.length === 0) {
     return (

@@ -2,7 +2,6 @@
 import { myPref } from "@/lib/Preferences"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
-// ZeYLjTYs5piyvUa
 export const useWebsokets = ({
   token,
   setToastMessage,

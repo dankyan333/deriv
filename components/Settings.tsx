@@ -6,6 +6,8 @@ interface SettingsProps {
   setToastMessage: (newValue: any) => void
   setToastType: (newValue: any) => void
   martingale: boolean
+  socket: WebSocket
+  loginid: any
 }
 
 const Settings: React.FC<SettingsProps> = ({
@@ -14,6 +16,8 @@ const Settings: React.FC<SettingsProps> = ({
   setToastMessage,
   setToastType,
   martingale,
+  socket,
+  loginid,
 }) => {
   function getAccountType(code: any) {
     let type
@@ -53,6 +57,19 @@ const Settings: React.FC<SettingsProps> = ({
     }
   }
 
+  function sendMsg(msg: any) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(msg))
+    }
+  }
+
+  const handleBalanceResetBtn = () => {
+    sendMsg({
+      topup_virtual: 1,
+      loginid: loginid,
+    })
+  }
+
   return (
     <div className='settingsContainer'>
       <div className='settingHeader'>Settings</div>
@@ -61,7 +78,11 @@ const Settings: React.FC<SettingsProps> = ({
         <div className={`accountTypeInfo ${getAccountTypeClass(data.loginid)}`}>
           {getAccountType(data.loginid)}
           {getAccountType(data.loginid) === "Demo" ? (
-            <div typeof='button' className='resetBalBtn'>
+            <div
+              typeof='button'
+              className='resetBalBtn'
+              onClick={handleBalanceResetBtn}
+            >
               Reset Balance
             </div>
           ) : null}
@@ -72,7 +93,7 @@ const Settings: React.FC<SettingsProps> = ({
         </div>
       </div>
 
-      <div className='settingsContainerTitle'>Positions protection</div>
+      <div className='settingsContainerTitle'>Positions Protection</div>
 
       <div className='settingsList1 displayRow'>
         <h3 className='settingsListSubTitle'>Martingale</h3>

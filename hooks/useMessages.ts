@@ -212,6 +212,24 @@ export const useMessages = ({
           break
         case "history":
           break
+        case "topup_virtual":
+          var topup = messages?.topup_virtual.amount
+
+          setAccount((prevData: any) => {
+            var updatedBalance = prevData.balance
+
+            if (prevData.balance !== 10000) {
+              updatedBalance = topup >= 10000 ? topup : -topup
+            }
+
+            return {
+              ...prevData,
+              balance: updatedBalance,
+            }
+          })
+
+          console.log(topup)
+          break
         case "tick":
           let lastOneDigit: any
 
@@ -223,6 +241,7 @@ export const useMessages = ({
               const targetLength = "1567.81".length
               return price.toString().length !== targetLength
             }
+
             if (isPriceLengthDifferent(newTick)) {
               lastOneDigit = [0]
             } else {
@@ -277,8 +296,8 @@ export const useMessages = ({
         default:
           break
       }
+
       analysis()
-      // calculateStops()
       calculateProfit(stopLoss, takeProfit)
       calculateTotalProfit()
     },

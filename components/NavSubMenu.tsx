@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from "react"
-import { AccountsT, useDerivAccount } from "@/hooks/useDerivAccount"
 import Link from "next/link"
+import LogoutButton from "./LogoutButton"
 
 interface NavSubMenuProps {
   data: any
 }
 
 const NavSubMenu: React.FC<NavSubMenuProps> = ({ data }) => {
-  const derivAccount = useDerivAccount()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [allaccounts, setAllAccounts] = useState<AccountsT[]>([])
+  const [existing_accounts, setExistingAccounts] = useState<any[]>([])
 
   useEffect(() => {
-    if (derivAccount) {
-      setAllAccounts(derivAccount)
+    const storedAccounts = sessionStorage.getItem("accounts")
+    if (storedAccounts) {
+      setExistingAccounts(JSON.parse(storedAccounts))
+    } else {
+      setExistingAccounts(data.account_list)
     }
-  }, [])
+  }, [data.account_list])
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
-  console.log(allaccounts)
-
-  let existing_accounts =
-    allaccounts.length === 0 ? data.account_list : allaccounts
 
   return (
     <nav className='navMenu'>
@@ -38,24 +36,18 @@ const NavSubMenu: React.FC<NavSubMenuProps> = ({ data }) => {
         className={`navDropMenu ${isMenuOpen ? "show" : ""}`}
       >
         <div className='navMenuTitle'>My Accounts</div>
-        {existing_accounts.map((account: any) => {
-          if (account.token) {
-            const url = `bot?token=${account.token}`
-            return (
-              <li key={account.code}>
-                <Link href={url}>
-                  {account.code} {account.currency}
-                </Link>
-              </li>
-            )
-          } else {
-            return (
-              <li key={account.loginid}>
-                {account.loginid} {account.currency}
-              </li>
-            )
-          }
-        })}
+        {existing_accounts.map((account: any) => (
+          <li key={account.token || account.loginid}>
+            {account.token ? (
+              <Link href={`bot?token=${account.token}`}>
+                {`${account.code} ${account.currency}`}
+              </Link>
+            ) : (
+              <span>{`${account.loginid} ${account.currency}`}</span>
+            )}
+          </li>
+        ))}
+        <LogoutButton></LogoutButton>
       </ul>
     </nav>
   )
