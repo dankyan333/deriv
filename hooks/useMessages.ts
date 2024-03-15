@@ -1,5 +1,7 @@
 "use client"
+import { connected } from "process"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { firstStrategy, secondStrategy, thirdStrategy } from "./useStrategy"
 
 interface Trade {
   buy_price: number
@@ -43,6 +45,7 @@ export const useMessages = ({
   const [invalidInputValue, setInvalidINputValue] = useState(false)
   const [profitClass, setProfitClass] = useState<any>()
   const [martingale, setMartingale] = useState<boolean>(false)
+  const [strategy, setStrategy] = useState<any>("first")
 
   useEffect(
     function () {
@@ -53,7 +56,7 @@ export const useMessages = ({
       }
 
       function trimToTwoDecimals(number: any) {
-        let roundedNum = parseFloat(number.toFixed(2))
+        const roundedNum = parseFloat(number.toFixed(2))
         return roundedNum
       }
 
@@ -89,11 +92,11 @@ export const useMessages = ({
       }
 
       function calculateTotalProfit() {
-        let calctotalProfit = trades.reduce(
+        const calctotalProfit = trades.reduce(
           (acc, trade) => acc + trade.profit,
           0
         )
-        let roundedVal = parseFloat(calctotalProfit.toFixed(2))
+        const roundedVal = parseFloat(calctotalProfit.toFixed(2))
         if (roundedVal < 0) {
           setProfitClass("dangerInfo")
         } else if (Number.isInteger(roundedVal)) {
@@ -118,55 +121,48 @@ export const useMessages = ({
         setShowLiveActionLoader(true)
         setLiveActionClassName("dangerInfo")
 
-        let count = 0
-
-        for (let digit of asset) {
-          if (digit <= 3) {
-            count++
-          }
-        }
-
-        if (count === asset.length) {
-          //open trade
-          setLiveAction("Trading signal acquired, placing trade")
-          setShowLiveActionLoader(true)
-          setLiveActionClassName("successInfo")
-
-          if (stake > 0.34 || account.balance > stake) {
-            sendMsg({
-              buy: 1,
-              subscribe: 1,
-              price: stake,
-              parameters: {
-                amount: stake,
-                basis: "stake",
-                contract_type: "DIGITOVER",
-                barrier: 3,
-                currency: "USD",
-                duration: 1,
-                duration_unit: "t",
-                symbol: "1HZ100V",
-              },
-            })
-            setRunningTrades(prevData => {
-              return prevData + 1
-            })
-
-            setStakes(prev => {
-              let updatedAsset = [...prev]
-              updatedAsset.unshift(parseInt(`${stake}`))
-              const firststake = updatedAsset[updatedAsset.length - 1]
-              setDefaultStake(firststake)
-              if (stopped) {
-                setStakes([])
-              }
-              return updatedAsset
-            })
-          } else {
-            setToastMessage("Timeout occured")
-            setToastType("error")
-            setStopped(true)
-          }
+        if (strategy === "first") {
+          firstStrategy(
+            stopped,
+            runningTrades,
+            asset,
+            setLiveAction,
+            setShowLiveActionLoader,
+            setLiveActionClassName,
+            setRunningTrades,
+            setStakes,
+            stake,
+            sendMsg,
+            setDefaultStake
+          )
+        } else if (strategy === "second") {
+          secondStrategy(
+            stopped,
+            runningTrades,
+            asset,
+            setLiveAction,
+            setShowLiveActionLoader,
+            setLiveActionClassName,
+            setRunningTrades,
+            setStakes,
+            stake,
+            sendMsg,
+            setDefaultStake
+          )
+        } else if (strategy === "third") {
+          thirdStrategy(
+            stopped,
+            runningTrades,
+            asset,
+            setLiveAction,
+            setShowLiveActionLoader,
+            setLiveActionClassName,
+            setRunningTrades,
+            setStakes,
+            stake,
+            sendMsg,
+            setDefaultStake
+          )
         }
       }
 
@@ -212,20 +208,6 @@ export const useMessages = ({
           break
         case "history":
           break
-        case "topup_virtual":
-          var topup = messages?.topup_virtual.amount
-
-          setAccount((prevData: any) => {
-            var updatedBalance = prevData.balance
-            if (prevData.balance !== 10000) {
-              updatedBalance = topup >= 10000 ? topup : -topup
-            }
-            return {
-              ...prevData,
-              balance: updatedBalance,
-            }
-          })
-          break
         case "tick":
           let lastOneDigit: any
 
@@ -247,9 +229,10 @@ export const useMessages = ({
                 .map(digit => parseInt(digit))
             }
             updatedAsset.unshift(parseInt(lastOneDigit))
-            if (updatedAsset.length > 2) {
+            if (updatedAsset.length > 1) {
               updatedAsset.pop()
             }
+            console.log(updatedAsset)
             return updatedAsset
           })
 
@@ -296,7 +279,7 @@ export const useMessages = ({
       calculateProfit(stopLoss, takeProfit)
       calculateTotalProfit()
     },
-    [messages]
+    [messages, strategy]
   )
 
   return {
@@ -322,5 +305,6 @@ export const useMessages = ({
     setDefaultStake,
     setStakes,
     stakes,
+    setStrategy,
   }
 }

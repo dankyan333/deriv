@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
 interface SettingsProps {
   data: any
@@ -6,8 +6,9 @@ interface SettingsProps {
   setToastMessage: (newValue: any) => void
   setToastType: (newValue: any) => void
   martingale: boolean
-  socket: WebSocket
-  loginid: any
+  setStrategy: any
+  // socket: WebSocket
+  // loginid: any
 }
 
 const Settings: React.FC<SettingsProps> = ({
@@ -16,12 +17,18 @@ const Settings: React.FC<SettingsProps> = ({
   setToastMessage,
   setToastType,
   martingale,
-  socket,
-  loginid,
+  setStrategy,
+  // socket,
+  // loginid,
 }) => {
+  const [selectedBtn, setSelectedBtn] = useState<string>("first")
+
+  useEffect(() => {
+    handleStrategy("first")
+  }, [])
+
   function getAccountType(code: any) {
     let type
-
     let str = code
     let trimmedStr = str.substring(0, 2)
     if (trimmedStr === "CR") {
@@ -35,7 +42,6 @@ const Settings: React.FC<SettingsProps> = ({
 
   function getAccountTypeClass(code: any) {
     let cssClass
-
     let str = code
     let trimmedStr = str.substring(0, 2)
     if (trimmedStr === "CR") {
@@ -45,6 +51,7 @@ const Settings: React.FC<SettingsProps> = ({
       return (cssClass = "warningInfo")
     }
   }
+
   const handleOncheckedMartingale = () => {
     if (!martingale) {
       setMartingaleState(true)
@@ -57,23 +64,35 @@ const Settings: React.FC<SettingsProps> = ({
     }
   }
 
-  function sendMsg(msg: any) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify(msg))
+  const handleStrategy = (strategy: string) => {
+    setStrategy(strategy)
+    setSelectedBtn(strategy)
+    let toastMessage = ""
+    switch (strategy) {
+      case "first":
+        toastMessage = "Under 3 over 3 selected"
+        break
+      case "second":
+        toastMessage = "Under 3 over 1 selected"
+        break
+      case "third":
+        toastMessage = "Equal 6 over 6 selected"
+        break
+      default:
+        toastMessage = ""
     }
+    setToastMessage(toastMessage)
+    setToastType("success")
   }
 
   const handleBalanceResetBtn = () => {
-    sendMsg({
-      topup_virtual: 1,
-      loginid: loginid,
-    })
+    setToastMessage("Unavailable")
+    setToastType("info")
   }
 
   return (
     <div className='settingsContainer'>
       <div className='settingHeader'>Settings</div>
-
       <div className='accountInfo'>
         <div className={`accountTypeInfo ${getAccountTypeClass(data.loginid)}`}>
           {getAccountType(data.loginid)}
@@ -92,15 +111,40 @@ const Settings: React.FC<SettingsProps> = ({
           {data.loginid} ({data.currency})
         </div>
       </div>
-
-      <div className='settingsContainerTitle'>Positions Protection</div>
-
+      <div className='settingsContainerTitle'>Positions Recovery</div>
       <div className='settingsList1 displayRow'>
         <h3 className='settingsListSubTitle'>Martingale</h3>
         <section className='slider-checkbox'>
           <input type='checkbox' id='c2' onChange={handleOncheckedMartingale} />
           <label htmlFor='Martingale'></label>
         </section>
+      </div>
+      <div className='settingsContainerTitle mt-2'>Strategies</div>
+      <div className='settingsList2'>
+        <div
+          className={`strategyCard ${
+            selectedBtn === "first" ? "successBackground" : "normalBackground"
+          }`}
+          onClick={() => handleStrategy("first")}
+        >
+          U3O3
+        </div>
+        <div
+          className={`strategyCard ${
+            selectedBtn === "second" ? "successBackground" : "normalBackground"
+          }`}
+          onClick={() => handleStrategy("second")}
+        >
+          U3O1
+        </div>
+        <div
+          className={`strategyCard ${
+            selectedBtn === "third" ? "successBackground" : "normalBackground"
+          }`}
+          onClick={() => handleStrategy("third")}
+        >
+          E6O6
+        </div>
       </div>
     </div>
   )

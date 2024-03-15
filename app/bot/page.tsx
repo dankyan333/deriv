@@ -1,5 +1,7 @@
 "use client"
 
+import NavSubMenu from "@/components/NavSubMenu"
+// import NavSubMenu from "@/components/NavSubMenu"
 import Settings from "@/components/Settings"
 import Toast from "@/components/Toast"
 import { useGetQueryParams } from "@/hooks/useGetQueryParams"
@@ -19,15 +21,12 @@ const page = () => {
 
 const GetToken = () => {
   const { token } = useGetQueryParams()
-
   const { toastMessage, toastType, setToastMessage, setToastType } = useToast()
-
   const { connected, setConnected, messages, socket } = useWebsokets({
     token,
     setToastMessage,
     setToastType,
   })
-
   const {
     liveAction,
     liveActionClassName,
@@ -36,7 +35,6 @@ const GetToken = () => {
     setLiveActionClassName,
     setShowLiveActionLoader,
   } = useLiveActionMessage()
-
   const {
     account,
     stopped,
@@ -55,6 +53,7 @@ const GetToken = () => {
     martingale,
     setMartingale,
     setStakes,
+    setStrategy,
   } = useMessages({
     messages,
     socket,
@@ -152,6 +151,8 @@ const GetToken = () => {
         <li className='balInfo'>
           {account?.balance} {account?.currency}
         </li>
+
+        <NavSubMenu data={account}></NavSubMenu>
       </div>
 
       <Toast
@@ -269,8 +270,9 @@ const GetToken = () => {
           setToastMessage={setToastMessage}
           setToastType={setToastType}
           martingale={martingale}
-          socket={socket}
-          loginid={account.loginid}
+          setStrategy={setStrategy}
+          // socket={socket}
+          // loginid={account.loginid}
         ></Settings>
       </div>
     </div>
