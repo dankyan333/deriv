@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+
 @layer base {
   html {
     font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
@@ -450,6 +452,21 @@ input[type="number"] {
   align-items: center;
   justify-content: center;
   margin-left: 25%;
+  margin-bottom: 10px;
+}
+
+.settingsContainerTitle2 {
+  font-size: 15px;
+  font-weight: 600;
+  height: 25px;
+  width: 100px;
+  border: 1px solid #cdcdcd;
+  border-radius: 15px;
+  color: #cdcdcd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 30%;
   margin-bottom: 10px;
 }
 

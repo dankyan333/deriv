@@ -46,6 +46,7 @@ export const useMessages = ({
   const [profitClass, setProfitClass] = useState<any>()
   const [martingale, setMartingale] = useState<boolean>(false)
   const [strategy, setStrategy] = useState<any>("first")
+  const [strategyarray, setStrategyArray] = useState<number>(2)
 
   useEffect(
     function () {
@@ -69,6 +70,7 @@ export const useMessages = ({
           faketrades.reduce((acc, trade) => acc + trade.profit, 0)
         )
         if (stopLoss !== 0 && totalstopsProfit <= -stopLoss) {
+          setStakeValue(defaultStake)
           setStopped(true)
           setTotalStopsProfit(0)
           setFakeTrades([])
@@ -80,6 +82,7 @@ export const useMessages = ({
         }
 
         if (takeProfit !== 0 && totalstopsProfit >= takeProfit) {
+          setStakeValue(defaultStake)
           setStopped(true)
           setTotalStopsProfit(0)
           setFakeTrades([])
@@ -110,6 +113,14 @@ export const useMessages = ({
       }
 
       function analysis() {
+        if (strategy === "first") {
+          setStrategyArray(2)
+        } else if (strategy === "second") {
+          setStrategyArray(2)
+        } else if (strategy === "third") {
+          setStrategyArray(1)
+        }
+
         if (stopped) {
           setLiveAction("Start bot")
           setShowLiveActionLoader(false)
@@ -209,30 +220,29 @@ export const useMessages = ({
         case "history":
           break
         case "tick":
+          let currentArrayToBeUsed = strategyarray
           let lastOneDigit: any
 
-          setAsset(prev => {
-            const updatedAsset = [...prev]
+          setAsset(prevAsset => {
+            const updatedAsset = [...prevAsset]
             let newTick = String(messages?.tick.quote)
 
             function isPriceLengthDifferent(price: any) {
               const targetLength = "1567.81".length
               return price.toString().length !== targetLength
             }
-
             if (isPriceLengthDifferent(newTick)) {
-              lastOneDigit = [0]
+              lastOneDigit = 0
             } else {
-              lastOneDigit = newTick
-                .slice(-1)
-                .split("")
-                .map(digit => parseInt(digit))
+              lastOneDigit = parseInt(newTick.slice(-1))
             }
-            updatedAsset.unshift(parseInt(lastOneDigit))
-            if (updatedAsset.length > 1) {
-              updatedAsset.pop()
+            updatedAsset.unshift(lastOneDigit)
+
+            if (updatedAsset.length > currentArrayToBeUsed) {
+              while (updatedAsset.length > currentArrayToBeUsed) {
+                updatedAsset.pop()
+              }
             }
-            console.log(updatedAsset)
             return updatedAsset
           })
 
@@ -279,7 +289,7 @@ export const useMessages = ({
       calculateProfit(stopLoss, takeProfit)
       calculateTotalProfit()
     },
-    [messages, strategy]
+    [messages, strategy, strategyarray, totalstopsProfit]
   )
 
   return {

@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useState } from "react"
 
 interface SettingsProps {
@@ -119,7 +121,7 @@ const Settings: React.FC<SettingsProps> = ({
           <label htmlFor='Martingale'></label>
         </section>
       </div>
-      <div className='settingsContainerTitle mt-2'>Strategies</div>
+      <div className='settingsContainerTitle2 mt-2'>Strategies</div>
       <div className='settingsList2'>
         <div
           className={`strategyCard ${
