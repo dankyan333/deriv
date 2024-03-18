@@ -1,7 +1,12 @@
 "use client"
 import { connected } from "process"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { firstStrategy, secondStrategy, thirdStrategy } from "./useStrategy"
+import {
+  firstStrategy,
+  fourthStrategy,
+  secondStrategy,
+  thirdStrategy,
+} from "./useStrategy"
 
 interface Trade {
   buy_price: number
@@ -47,6 +52,7 @@ export const useMessages = ({
   const [martingale, setMartingale] = useState<boolean>(false)
   const [strategy, setStrategy] = useState<any>("first")
   const [strategyarray, setStrategyArray] = useState<number>(2)
+  const [symbol, setSymbol] = useState<any>("1HZ100V")
 
   useEffect(
     function () {
@@ -55,12 +61,10 @@ export const useMessages = ({
           socket.send(JSON.stringify(msg))
         }
       }
-
       function trimToTwoDecimals(number: any) {
         const roundedNum = parseFloat(number.toFixed(2))
         return roundedNum
       }
-
       function calculateProfit(stopLoss = 0, takeProfit = 0) {
         if (stopped) return
         if (stopLoss === 0 && takeProfit === 0) {
@@ -80,7 +84,6 @@ export const useMessages = ({
           setToastType("error")
           return
         }
-
         if (takeProfit !== 0 && totalstopsProfit >= takeProfit) {
           setStakeValue(defaultStake)
           setStopped(true)
@@ -115,12 +118,17 @@ export const useMessages = ({
       function analysis() {
         if (strategy === "first") {
           setStrategyArray(2)
+          setSymbol("1HZ100V")
         } else if (strategy === "second") {
           setStrategyArray(2)
+          setSymbol("1HZ100V")
         } else if (strategy === "third") {
           setStrategyArray(1)
+          setSymbol("1HZ100V")
+        } else if (strategy === "fourth") {
+          setStrategyArray(3)
+          setSymbol("R_100")
         }
-
         if (stopped) {
           setLiveAction("Start bot")
           setShowLiveActionLoader(false)
@@ -174,20 +182,36 @@ export const useMessages = ({
             sendMsg,
             setDefaultStake
           )
+        } else if (strategy === "fourth") {
+          fourthStrategy(
+            stopped,
+            runningTrades,
+            asset,
+            setLiveAction,
+            setShowLiveActionLoader,
+            setLiveActionClassName,
+            setRunningTrades,
+            setStakes,
+            stake,
+            sendMsg,
+            setDefaultStake
+          )
         }
       }
-
-      function startMartingale() {
+      function startMartingale(status: string) {
         if (!martingale) return
-        const newStake = stake * 2
-        setStakeValue(newStake)
+        switch (status) {
+          case "won":
+            setStakeValue(defaultStake)
+            break
+          case "lost":
+            const newStake = stake * 2
+            setStakeValue(newStake)
+            break
+          default:
+            break
+        }
       }
-
-      function handleWin() {
-        if (!martingale) return
-        setStakeValue(defaultStake)
-      }
-
       switch (messages?.msg_type) {
         case "authorize":
           const authData = messages?.authorize
@@ -200,7 +224,7 @@ export const useMessages = ({
           })
           // get ticks
           sendMsg({
-            ticks: "1HZ100V",
+            ticks: symbol,
             subscribe: 1,
           })
 
@@ -226,9 +250,8 @@ export const useMessages = ({
           setAsset(prevAsset => {
             const updatedAsset = [...prevAsset]
             let newTick = String(messages?.tick.quote)
-
             function isPriceLengthDifferent(price: any) {
-              const targetLength = "1567.81".length
+              const targetLength = "1111.11".length
               return price.toString().length !== targetLength
             }
             if (isPriceLengthDifferent(newTick)) {
@@ -259,9 +282,8 @@ export const useMessages = ({
             setFakeTrades(prevTrades => [newTrade, ...prevTrades])
             setRunningTrades(0)
             setShowLiveActionLoader(false)
-
             if (status === "won") {
-              handleWin()
+              startMartingale(status)
               setLiveAction((prevData: any) => {
                 prevData = `You have ${status} +${profit} USD`
                 return prevData
@@ -269,7 +291,7 @@ export const useMessages = ({
               setLiveActionClassName("successInfo")
             }
             if (status === "lost") {
-              startMartingale()
+              startMartingale(status)
               setLiveAction((prevData: any) => {
                 prevData = `You have ${status} ${profit} USD`
                 return prevData
@@ -284,12 +306,11 @@ export const useMessages = ({
         default:
           break
       }
-
       analysis()
       calculateProfit(stopLoss, takeProfit)
       calculateTotalProfit()
     },
-    [messages, strategy, strategyarray, totalstopsProfit]
+    [messages, strategy, strategyarray, totalstopsProfit, symbol]
   )
 
   return {
@@ -316,5 +337,6 @@ export const useMessages = ({
     setStakes,
     stakes,
     setStrategy,
+    setSymbol,
   }
 }

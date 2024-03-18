@@ -1,7 +1,6 @@
 "use client"
 
 import NavSubMenu from "@/components/NavSubMenu"
-// import NavSubMenu from "@/components/NavSubMenu"
 import Settings from "@/components/Settings"
 import Toast from "@/components/Toast"
 import { useGetQueryParams } from "@/hooks/useGetQueryParams"
@@ -54,6 +53,7 @@ const GetToken = () => {
     setMartingale,
     setStakes,
     setStrategy,
+    setSymbol,
   } = useMessages({
     messages,
     socket,
@@ -228,7 +228,6 @@ const GetToken = () => {
                 </label>
                 <input
                   readOnly={!stopped}
-                  value={takeProfit}
                   onChange={handleTakeProfitInputChange}
                   className='takeProfitInput'
                   type='text'
@@ -243,7 +242,6 @@ const GetToken = () => {
                 </label>
                 <input
                   readOnly={!stopped}
-                  value={stopLoss}
                   onChange={handleStopLossInputChange}
                   className='stopLossInput'
                   type='text'
@@ -271,6 +269,7 @@ const GetToken = () => {
           setToastType={setToastType}
           martingale={martingale}
           setStrategy={setStrategy}
+          setSymbol={setSymbol}
           // socket={socket}
           // loginid={account.loginid}
         ></Settings>

@@ -1,9 +1,19 @@
 import "./globals.css"
 import "./components.css"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, Open_Sans } from "next/font/google"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Open_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-opensans",
+})
+
+const roboto = Open_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto-mono",
+})
 
 export const metadata: Metadata = {
   title: "Deriv",
@@ -16,8 +26,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang='en'>
-      <body className={inter.className}>{children}</body>
+    <html
+      lang='en'
+      className={`${inter.variable} ${roboto.variable} font-sans`}
+    >
+      <body>{children}</body>
     </html>
   )
 }

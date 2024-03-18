@@ -9,6 +9,7 @@ interface SettingsProps {
   setToastType: (newValue: any) => void
   martingale: boolean
   setStrategy: any
+  setSymbol: any
   // socket: WebSocket
   // loginid: any
 }
@@ -20,6 +21,7 @@ const Settings: React.FC<SettingsProps> = ({
   setToastType,
   martingale,
   setStrategy,
+  setSymbol,
   // socket,
   // loginid,
 }) => {
@@ -79,6 +81,10 @@ const Settings: React.FC<SettingsProps> = ({
         break
       case "third":
         toastMessage = "Equal 6 over 6 selected"
+        break
+      case "fourth":
+        toastMessage = "Over 6 under 6 selected"
+        setSymbol("R_100")
         break
       default:
         toastMessage = ""
@@ -146,6 +152,14 @@ const Settings: React.FC<SettingsProps> = ({
           onClick={() => handleStrategy("third")}
         >
           E6O6
+        </div>
+        <div
+          className={`strategyCard ${
+            selectedBtn === "fourth" ? "successBackground" : "normalBackground"
+          }`}
+          onClick={() => handleStrategy("fourth")}
+        >
+          O6U6
         </div>
       </div>
     </div>
