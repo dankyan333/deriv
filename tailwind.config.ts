@@ -15,17 +15,7 @@ const config: Config = {
       },
     },
     fontFamily: {
-      sans: [
-        "ui-sans-serif",
-        "system-ui",
-        "Helvetica",
-        "Arial",
-        "sans-serif",
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol",
-        "Noto Color Emoji",
-      ],
+      sans: ["var(--font-inter)"],
     },
   },
   plugins: [],
