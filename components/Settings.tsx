@@ -1,7 +1,5 @@
 "use client"
-
 import React, { useEffect, useState } from "react"
-
 interface SettingsProps {
   data: any
   setMartingaleState: (newValue: boolean) => void
@@ -10,10 +8,7 @@ interface SettingsProps {
   martingale: boolean
   setStrategy: any
   setSymbol: any
-  // socket: WebSocket
-  // loginid: any
 }
-
 const Settings: React.FC<SettingsProps> = ({
   data,
   setMartingaleState,
@@ -22,15 +17,11 @@ const Settings: React.FC<SettingsProps> = ({
   martingale,
   setStrategy,
   setSymbol,
-  // socket,
-  // loginid,
 }) => {
   const [selectedBtn, setSelectedBtn] = useState<string>("first")
-
   useEffect(() => {
     handleStrategy("first")
   }, [])
-
   function getAccountType(code: any) {
     let type
     let str = code
@@ -43,7 +34,6 @@ const Settings: React.FC<SettingsProps> = ({
     }
     return (type = "Unknown")
   }
-
   function getAccountTypeClass(code: any) {
     let cssClass
     let str = code
@@ -55,7 +45,6 @@ const Settings: React.FC<SettingsProps> = ({
       return (cssClass = "warningInfo")
     }
   }
-
   const handleOncheckedMartingale = () => {
     if (!martingale) {
       setMartingaleState(true)
@@ -67,7 +56,6 @@ const Settings: React.FC<SettingsProps> = ({
       setToastType("info")
     }
   }
-
   const handleStrategy = (strategy: string) => {
     setStrategy(strategy)
     setSelectedBtn(strategy)
@@ -84,7 +72,9 @@ const Settings: React.FC<SettingsProps> = ({
         break
       case "fourth":
         toastMessage = "Over 6 under 6 selected"
-        setSymbol("R_100")
+        break
+      case "fifth":
+        toastMessage = "Equal 6 under 6 selected"
         break
       default:
         toastMessage = ""
@@ -92,12 +82,10 @@ const Settings: React.FC<SettingsProps> = ({
     setToastMessage(toastMessage)
     setToastType("success")
   }
-
   const handleBalanceResetBtn = () => {
     setToastMessage("Unavailable")
     setToastType("info")
   }
-
   return (
     <div className='settingsContainer'>
       <div className='settingHeader'>Settings</div>
@@ -161,9 +149,16 @@ const Settings: React.FC<SettingsProps> = ({
         >
           O6U6
         </div>
+        <div
+          className={`strategyCard ${
+            selectedBtn === "fifth" ? "successBackground" : "normalBackground"
+          }`}
+          onClick={() => handleStrategy("fifth")}
+        >
+          E6U6
+        </div>
       </div>
     </div>
   )
 }
-
 export default Settings

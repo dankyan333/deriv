@@ -2,6 +2,7 @@
 import { connected } from "process"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import {
+  fifthStrategy,
   firstStrategy,
   fourthStrategy,
   secondStrategy,
@@ -14,7 +15,6 @@ interface Trade {
   profit: number
   contract_id: string
 }
-
 export const useMessages = ({
   messages,
   socket,
@@ -53,7 +53,6 @@ export const useMessages = ({
   const [strategy, setStrategy] = useState<any>("first")
   const [strategyarray, setStrategyArray] = useState<number>(2)
   const [symbol, setSymbol] = useState<any>("1HZ100V")
-
   useEffect(
     function () {
       function sendMsg(msg: any) {
@@ -96,7 +95,6 @@ export const useMessages = ({
           return
         }
       }
-
       function calculateTotalProfit() {
         const calctotalProfit = trades.reduce(
           (acc, trade) => acc + trade.profit,
@@ -114,7 +112,6 @@ export const useMessages = ({
         }
         setTotalProfit(roundedVal)
       }
-
       function analysis() {
         if (strategy === "first") {
           setStrategyArray(2)
@@ -128,6 +125,9 @@ export const useMessages = ({
         } else if (strategy === "fourth") {
           setStrategyArray(2)
           setSymbol("1HZ100V")
+        } else if (strategy === "fifth") {
+          setStrategyArray(1)
+          setSymbol("1HZ100V")
         }
         if (stopped) {
           setLiveAction("Start bot")
@@ -139,7 +139,6 @@ export const useMessages = ({
         setLiveAction("Waiting for trading signal")
         setShowLiveActionLoader(true)
         setLiveActionClassName("dangerInfo")
-
         if (strategy === "first") {
           firstStrategy(
             stopped,
@@ -196,6 +195,20 @@ export const useMessages = ({
             sendMsg,
             setDefaultStake
           )
+        } else if (strategy === "fifth") {
+          fifthStrategy(
+            stopped,
+            runningTrades,
+            asset,
+            setLiveAction,
+            setShowLiveActionLoader,
+            setLiveActionClassName,
+            setRunningTrades,
+            setStakes,
+            stake,
+            sendMsg,
+            setDefaultStake
+          )
         }
       }
       function startMartingale(status: string) {
@@ -227,12 +240,10 @@ export const useMessages = ({
             ticks: symbol,
             subscribe: 1,
           })
-
           sendMsg({
             balance: 1,
             subscribe: 1,
           })
-
           setConnected(true)
           break
         case "balance":
@@ -246,7 +257,6 @@ export const useMessages = ({
         case "tick":
           let currentArrayToBeUsed = strategyarray
           let lastOneDigit: any
-
           setAsset(prevAsset => {
             const updatedAsset = [...prevAsset]
             let newTick = String(messages?.tick.quote)
@@ -260,7 +270,6 @@ export const useMessages = ({
               lastOneDigit = parseInt(newTick.slice(-1))
             }
             updatedAsset.unshift(lastOneDigit)
-
             if (updatedAsset.length > currentArrayToBeUsed) {
               while (updatedAsset.length > currentArrayToBeUsed) {
                 updatedAsset.pop()
@@ -302,7 +311,6 @@ export const useMessages = ({
           break
         case "ping":
           break
-
         default:
           break
       }
@@ -312,7 +320,6 @@ export const useMessages = ({
     },
     [messages, strategy, strategyarray, totalstopsProfit, symbol]
   )
-
   return {
     account,
     stopped,
