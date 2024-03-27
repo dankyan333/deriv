@@ -126,7 +126,7 @@ export const useMessages = ({
           setStrategyArray(1)
           setSymbol("1HZ100V")
         } else if (strategy === "fourth") {
-          setStrategyArray(3)
+          setStrategyArray(1)
           setSymbol("1HZ100V")
         }
         if (stopped) {
