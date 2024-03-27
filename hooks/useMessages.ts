@@ -6,7 +6,6 @@ import {
   firstStrategy,
   fourthStrategy,
   secondStrategy,
-  thirdStrategy,
 } from "./useStrategy"
 
 interface Trade {
@@ -119,9 +118,6 @@ export const useMessages = ({
         } else if (strategy === "second") {
           setStrategyArray(2)
           setSymbol("1HZ100V")
-        } else if (strategy === "third") {
-          setStrategyArray(1)
-          setSymbol("1HZ100V")
         } else if (strategy === "fourth") {
           setStrategyArray(2)
           setSymbol("1HZ100V")
@@ -155,20 +151,6 @@ export const useMessages = ({
           )
         } else if (strategy === "second") {
           secondStrategy(
-            stopped,
-            runningTrades,
-            asset,
-            setLiveAction,
-            setShowLiveActionLoader,
-            setLiveActionClassName,
-            setRunningTrades,
-            setStakes,
-            stake,
-            sendMsg,
-            setDefaultStake
-          )
-        } else if (strategy === "third") {
-          thirdStrategy(
             stopped,
             runningTrades,
             asset,

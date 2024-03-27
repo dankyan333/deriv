@@ -67,9 +67,6 @@ const Settings: React.FC<SettingsProps> = ({
       case "second":
         toastMessage = "Under 3 over 1 selected"
         break
-      case "third":
-        toastMessage = "Equal 6 over 6 selected"
-        break
       case "fourth":
         toastMessage = "Over 6 under 6 selected"
         break
@@ -132,14 +129,6 @@ const Settings: React.FC<SettingsProps> = ({
           onClick={() => handleStrategy("second")}
         >
           U3O1
-        </div>
-        <div
-          className={`strategyCard ${
-            selectedBtn === "third" ? "successBackground" : "normalBackground"
-          }`}
-          onClick={() => handleStrategy("third")}
-        >
-          E6O6
         </div>
         <div
           className={`strategyCard ${
