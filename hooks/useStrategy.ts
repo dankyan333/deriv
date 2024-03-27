@@ -174,7 +174,7 @@ export function fourthStrategy(
         currency: "USD",
         duration: 1,
         duration_unit: "t",
-        symbol: "R_100",
+        symbol: "1HZ100V",
       },
     })
     setRunningTrades(prevData => prevData + 1)

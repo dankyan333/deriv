@@ -127,7 +127,7 @@ export const useMessages = ({
           setSymbol("1HZ100V")
         } else if (strategy === "fourth") {
           setStrategyArray(3)
-          setSymbol("R_100")
+          setSymbol("1HZ100V")
         }
         if (stopped) {
           setLiveAction("Start bot")
