@@ -54,6 +54,7 @@ const GetToken = () => {
     setStakes,
     setStrategy,
     setSymbol,
+    setResetDemoBal,
   } = useMessages({
     messages,
     socket,
@@ -220,7 +221,6 @@ const GetToken = () => {
               name='stake'
               id='stake'
             />
-
             <div className='displayRow'>
               <div className='displayColumn'>
                 <label className='takeProfitLabel' htmlFor='takeProfit'>
@@ -235,7 +235,6 @@ const GetToken = () => {
                   id='takeProfit'
                 />
               </div>
-
               <div className='displayColumn'>
                 <label className='stopLossLabel' htmlFor='stopLoss'>
                   Stop Loss
@@ -250,7 +249,6 @@ const GetToken = () => {
                 />
               </div>
             </div>
-
             <button
               disabled={invalidInputValue}
               type='button'
@@ -270,8 +268,7 @@ const GetToken = () => {
           martingale={martingale}
           setStrategy={setStrategy}
           setSymbol={setSymbol}
-          // socket={socket}
-          // loginid={account.loginid}
+          setResetDemoBal={setResetDemoBal}
         ></Settings>
       </div>
     </div>

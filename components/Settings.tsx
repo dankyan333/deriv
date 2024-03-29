@@ -8,6 +8,7 @@ interface SettingsProps {
   martingale: boolean
   setStrategy: any
   setSymbol: any
+  setResetDemoBal: (newValue: boolean) => void
 }
 const Settings: React.FC<SettingsProps> = ({
   data,
@@ -17,6 +18,7 @@ const Settings: React.FC<SettingsProps> = ({
   martingale,
   setStrategy,
   setSymbol,
+  setResetDemoBal,
 }) => {
   const [selectedBtn, setSelectedBtn] = useState<string>("first")
   useEffect(() => {
@@ -80,8 +82,9 @@ const Settings: React.FC<SettingsProps> = ({
     setToastType("success")
   }
   const handleBalanceResetBtn = () => {
-    setToastMessage("Unavailable")
-    setToastType("info")
+    setToastMessage("Demo balance reset")
+    setToastType("success")
+    setResetDemoBal(true)
   }
   return (
     <div className='settingsContainer'>

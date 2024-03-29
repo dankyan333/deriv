@@ -1,6 +1,6 @@
 "use client"
 import { connected } from "process"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import {
   fifthStrategy,
   firstStrategy,
@@ -52,6 +52,9 @@ export const useMessages = ({
   const [strategy, setStrategy] = useState<any>("first")
   const [strategyarray, setStrategyArray] = useState<number>(2)
   const [symbol, setSymbol] = useState<any>("1HZ100V")
+  const [resetDemoBal, setResetDemoBal] = useState<boolean>()
+  const assetRef = useRef<any>()
+
   useEffect(
     function () {
       function sendMsg(msg: any) {
@@ -207,6 +210,13 @@ export const useMessages = ({
             break
         }
       }
+      function resetDemoBalance() {
+        if (!resetDemoBal) return
+        sendMsg({
+          topup_virtual: 1,
+        })
+        setResetDemoBal(false)
+      }
       switch (messages?.msg_type) {
         case "authorize":
           const authData = messages?.authorize
@@ -239,6 +249,7 @@ export const useMessages = ({
         case "tick":
           let currentArrayToBeUsed = strategyarray
           let lastOneDigit: any
+
           setAsset(prevAsset => {
             const updatedAsset = [...prevAsset]
             let newTick = String(messages?.tick.quote)
@@ -299,6 +310,7 @@ export const useMessages = ({
       analysis()
       calculateProfit(stopLoss, takeProfit)
       calculateTotalProfit()
+      resetDemoBalance()
     },
     [messages, strategy, strategyarray, totalstopsProfit, symbol]
   )
@@ -327,5 +339,6 @@ export const useMessages = ({
     stakes,
     setStrategy,
     setSymbol,
+    setResetDemoBal,
   }
 }
